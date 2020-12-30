@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: service-order
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: server-config
+      profile: dev
+      label: main
+      name: service-config
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8000/eureka/
+server:
+  port: 8082
+
+# actuator相关配置
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      base-path: /
+      exposure:
+        include: [refresh,info,health] # 打开所有用"*"
+  endpoint:
+    health:
+      show-details: always
