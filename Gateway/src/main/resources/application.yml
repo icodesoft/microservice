@@ -1,0 +1,33 @@
+server:
+  port: 9002
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: first-route
+          uri: https://code.vmware.com
+          predicates:
+            - Path=/vmware-code/sdks
+          filters:
+            - StripPrefix=1
+        - id: product-route
+          uri: lb://SERVICE-PRODUCTER
+          predicates:
+            - Path=/api/producter/**
+          filters:
+            - StripPrefix=2
+        - id: consumer-route
+          uri: lb://SERVICE-CONSUMER
+          predicates:
+            - Path=/api/consumer/**
+          filters:
+            - StripPrefix=2
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8000/eureka/
