@@ -7,12 +7,6 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: first-route
-          uri: https://code.vmware.com
-          predicates:
-            - Path=/vmware-code/sdks
-          filters:
-            - StripPrefix=1
         - id: product-route
           uri: lb://SERVICE-PRODUCTER
           predicates:
