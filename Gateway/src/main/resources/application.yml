@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: api-gateway
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
   cloud:
     gateway:
       routes:
@@ -13,15 +17,33 @@ spring:
             - Path=/api/producter/**
           filters:
             - StripPrefix=2
+            - name: RequestRateLimiter
+              args:
+                # 用于限流的键的解析器的 Bean 对象的名字。它使用 SpEL 表达式根据#{@beanName}从 Spring 容器中获取 Bean 对象
+                key-resolver: '#{@userKeyResolver}'
+                # 令牌桶每秒填充平均速率
+                redis-rate-limiter.replenishRate: 1
+                # 令牌桶总容量
+                redis-rate-limiter.burstCapacity: 3
+            - name: Hystrix
+              args:
+                name: fallbackCmdA
+                fallbackUri: forward:/fallbackA
         - id: consumer-route
           uri: lb://SERVICE-CONSUMER
           predicates:
             - Path=/api/consumer/**
           filters:
             - StripPrefix=2
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
 eureka:
   instance:
     prefer-ip-address: true
   client:
     service-url:
       defaultZone: http://localhost:8000/eureka/
+
+hystrix.command.fallbackCmdA.execution.isolation.thread.timeoutInMilliseconds: 2000
