@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: service-rabbitmq
+  rabbitmq:
+    virtual-host: /
+    host: localhost
+    username: gary
+    password: Gary@20210113
+    port: 5672
+    listener:
+      type: simple
+      simple:
+        acknowledge-mode: manual #采用手动应答
+        prefetch: 1 #限制确认后每次发送一条数据。
+    publisher-confirm-type: correlated # 消息不管是否投递到交换机都进行ConfirmCallback回调，投递成功ack=true，否则为false
+    publisher-returns: true # 交换机匹配到队列成功则不进行ReturnCallback回调，否则先进行ReturnCallback回调再进行ConfirmCallback回调
+                            # 如果消息成功投递到交换机，但没匹配到队列，则ConfirmCallback回调ack仍为true
